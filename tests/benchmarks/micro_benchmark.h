@@ -23,6 +23,26 @@ class MicroBenchmark {
 
   static const uint64_t kThreadQueryCount = 75000;
 
+  class Barrier {
+   public:
+    explicit Barrier(std::size_t count)
+        : count_ { count } {
+    }
+    void Wait() {
+      std::unique_lock<std::mutex> lock { mutex_ };
+      if (--count_ == 0) {
+        cv_.notify_all();
+      } else {
+        cv_.wait(lock, [this] {return count_ == 0;});
+      }
+    }
+
+   private:
+    std::mutex mutex_;
+    std::condition_variable cv_;
+    std::size_t count_;
+  };
+
   MicroBenchmark(std::string& data_path);  // Mode: 0 = Load from scratch, 1 = Load from dump
 
   // Latency benchmarks

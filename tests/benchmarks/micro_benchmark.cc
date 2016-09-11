@@ -33,7 +33,8 @@
   }\
 }
 
-MicroBenchmark::MicroBenchmark(std::string& data_path) : shard_(1U << 27) {
+MicroBenchmark::MicroBenchmark(std::string& data_path)
+    : shard_(1U << 27) {
   char resolved_path[100];
   realpath(data_path.c_str(), resolved_path);
   data_path_ = resolved_path;
@@ -55,6 +56,7 @@ MicroBenchmark::MicroBenchmark(std::string& data_path) : shard_(1U << 27) {
   std::ifstream in(data_path);
   std::vector<std::string> values;
 
+  LOG(stderr, "Reading data from file %s...\n", data_path);
   while (load_data_size < target_data_size) {
     std::string cur_value;
     std::getline(in, cur_value);
@@ -228,6 +230,8 @@ void MicroBenchmark::BenchmarkThroughput(const double get_f,
   std::condition_variable cvar;
   std::vector<std::thread> threads;
 
+  Barrier barrier(num_clients);
+
   for (uint32_t i = 0; i < num_clients; i++) {
     threads.push_back(
         std::move(
@@ -263,6 +267,9 @@ void MicroBenchmark::BenchmarkThroughput(const double get_f,
               double query_thput = 0;
               double key_thput = 0;
               std::string get_res;
+
+              barrier.Wait();
+              LOG(stderr, "Starting benchmark.\n");
 
               try {
                 // Warmup phase
@@ -376,7 +383,7 @@ int main(int argc, char** argv) {
     ls_bench.BenchmarkDeleteLatency();
   } else if (bench_type.find("throughput") == 0) {
     std::vector<std::string> tokens = Split(bench_type, '-');
-    if (tokens.size() != 5) {
+    if (tokens.size() != 4) {
       LOG(stderr, "Error: Incorrect throughput benchmark format.\n");
       return -1;
     }
