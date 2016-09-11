@@ -23,16 +23,18 @@
 #endif
 
 #define QUERY(i, num_keys) {\
+  bool success;\
   if (query_types[i % kThreadQueryCount] == 0) {\
-    shard_.find(keys[i % keys.size()], get_res);\
+    success = shard_.find(keys[i % keys.size()], get_res);\
     num_keys++;\
   } else if (query_types[i % kThreadQueryCount] == 1) {\
-    shard_.insert(cur_key, values[i % values.size()]);\
+    success = shard_.insert(cur_key, values[i % values.size()]);\
     num_keys++;\
   } else {\
-    shard_.erase(keys[i % keys.size()]);\
+    success = shard_.erase(keys[i % keys.size()]);\
     num_keys++;\
   }\
+  assert(success);\
 }
 
 MicroBenchmark::MicroBenchmark(std::string& data_path)
@@ -70,9 +72,6 @@ MicroBenchmark::MicroBenchmark(std::string& data_path)
 
   auto start = high_resolution_clock::now();
   auto b_start = start;
-#ifdef PROFILE
-  Profiler::StartProfiling();
-#endif
   for (auto& cur_value : values) {
     shard_.insert(cur_key++, cur_value);
     load_end_offset_ += cur_value.length();
@@ -91,9 +90,6 @@ MicroBenchmark::MicroBenchmark(std::string& data_path)
       b_start = high_resolution_clock::now();
     }
   }
-#ifdef PROFILE
-  Profiler::StopProfiling();
-#endif
 
   // Print end of load statistics
   auto end = high_resolution_clock::now();
