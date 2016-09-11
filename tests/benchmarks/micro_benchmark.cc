@@ -231,7 +231,8 @@ void MicroBenchmark::BenchmarkThroughput(const double get_f,
   std::vector<std::thread> threads;
 
   Barrier barrier(num_clients);
-  std::atomic<int64_t> cur_key = load_keys_;
+  std::atomic<int64_t> cur_key;
+  cur_key.store(load_keys_);
   for (uint32_t i = 0; i < num_clients; i++) {
     threads.push_back(
         std::move(
