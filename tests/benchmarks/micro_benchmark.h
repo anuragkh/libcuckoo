@@ -4,6 +4,7 @@
 #include <chrono>
 #include <sys/time.h>
 #include <random>
+#include <condition_variable>
 
 #include "../../src/cuckoohash_map.hh"
 

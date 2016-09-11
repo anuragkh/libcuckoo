@@ -56,7 +56,7 @@ MicroBenchmark::MicroBenchmark(std::string& data_path)
   std::ifstream in(data_path);
   std::vector<std::string> values;
 
-  LOG(stderr, "Reading data from file %s...\n", data_path);
+  LOG(stderr, "Reading data from file %s...\n", data_path.c_str());
   while (load_data_size < target_data_size) {
     std::string cur_value;
     std::getline(in, cur_value);
