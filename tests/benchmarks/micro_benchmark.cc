@@ -13,6 +13,8 @@
 #include <sstream>
 #include <algorithm>
 #include <unistd.h>
+#include <stdint.h>
+#include <limits.h>
 
 #ifdef NO_LOG
 #define LOG(out, fmt, ...)
@@ -234,7 +236,7 @@ void MicroBenchmark::BenchmarkThroughput(const double get_f,
   for (uint32_t i = 0; i < num_clients; i++) {
     threads.push_back(
         std::move(
-            std::thread([i, get_f, insert_f, delete_f, get_m, insert_m, delete_m, &barrier, this] {
+            std::thread([i, get_f, insert_f, delete_f, get_m, insert_m, delete_m, num_clients, &barrier, this] {
               std::vector<int64_t> keys;
               std::vector<std::string> values;
 
