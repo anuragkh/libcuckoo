@@ -59,7 +59,7 @@ MicroBenchmark::MicroBenchmark(std::string& data_path)
   std::vector<std::string> values;
 
   LOG(stderr, "Reading data from file %s...\n", data_path.c_str());
-  while (load_data_size < target_data_size) {
+  while (load_data_size < target_data_size && !in.eof()) {
     std::string cur_value;
     std::getline(in, cur_value);
     values.push_back(cur_value);
