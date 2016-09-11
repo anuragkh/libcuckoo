@@ -231,7 +231,7 @@ void MicroBenchmark::BenchmarkThroughput(const double get_f,
   std::vector<std::thread> threads;
 
   Barrier barrier(num_clients);
-
+  std::atomic<int64_t> cur_key = load_keys_;
   for (uint32_t i = 0; i < num_clients; i++) {
     threads.push_back(
         std::move(
@@ -240,7 +240,6 @@ void MicroBenchmark::BenchmarkThroughput(const double get_f,
               std::vector<std::string> values;
 
               std::ifstream in_a(data_path_ + ".inserts");
-              int64_t cur_key = load_keys_;
               std::string term, value;
               std::vector<uint32_t> query_types;
               LOG(stderr, "Generating queries...\n");
