@@ -227,7 +227,6 @@ void MicroBenchmark::BenchmarkThroughput(const double get_f,
   const double get_m = get_f, insert_m = get_f + insert_f, delete_m = get_f
       + insert_f + delete_f;
 
-  std::condition_variable cvar;
   std::vector<std::thread> threads;
 
   Barrier barrier(num_clients);
@@ -235,7 +234,7 @@ void MicroBenchmark::BenchmarkThroughput(const double get_f,
   for (uint32_t i = 0; i < num_clients; i++) {
     threads.push_back(
         std::move(
-            std::thread([i] {
+            std::thread([i, get_f, insert_f, delete_f, get_m, insert_m, delete_m, &barrier, this] {
               std::vector<int64_t> keys;
               std::vector<std::string> values;
 
